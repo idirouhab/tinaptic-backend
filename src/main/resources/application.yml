@@ -1,0 +1,49 @@
+---
+micronaut:
+  application:
+    name: tinapticBackend
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+        enabled: true
+        theme: MATERIAL
+      redoc:
+        enabled: true
+jackson:
+  bean-introspection-module: true
+mongodb:
+  uri: mongodb://${MONGO_HOST:localhost}:${MONGO_PORT:27017}/school_manager_db
+---
+micronaut:
+  security:
+    authentication: bearer
+    interceptUrlMap:
+      - pattern: "/swagger/**"
+        httpMethod: GET
+        access:
+          - isAnonymous()
+      - pattern: "/swagger-ui/**"
+        httpMethod: GET
+        access:
+          - isAnonymous()
+    endpoints:
+      login:
+        enabled: true
+      oauth:
+        enabled: true
+    token:
+      jwt:
+        generator:
+          access-token:
+            expiration: 3600
+          refresh-token:
+            secret: "${JWT_GENERATOR_REFRESH_SECRET:eefe82f8-7ca6-11ea-bc55-0242ac130003}"
+        signatures:
+          secret:
+            generator:
+              secret: "${JWT_GENERATOR_SIGNATURE_SECRET:eefe82f8-7ca6-11ea-bc55-0242ac130003}"
